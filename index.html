@@ -1,547 +1,716 @@
-<header style="
-  background: linear-gradient(90deg, #ff6a00, #ff9e00);
-  padding: 25px 0;
-  box-shadow: 0 0 15px #ff7f00, 0 0 40px #ff9e00;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  text-align: center;
-  color: #fff;
-  text-transform: uppercase;
-  letter-spacing: 3px;
-  font-weight: 700;
-  font-size: 2.8rem;
-  user-select: none;
-  border-radius: 0 0 15px 15px;
-">
-  ♻️ Reci Go Educativo ♻️
-  <p style="
-    font-size: 1.2rem;
-    font-weight: 500;
-    letter-spacing: 1px;
-    margin-top: 8px;
-    color: #ffcc80;
-    font-style: italic;
-  ">
-    ¡Aprende, Recicla y Gana en un mundo sostenible!
-  </p>
-</header>
-
-
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Reci Go Educativo</title>
-<style>
-  body {
-    font-family: Arial, sans-serif;
-    text-align: center;
-    background: #111;
-    color: white;
-  }
-  #game-container {
-    margin: 20px auto;
-    position: relative;
-    width: 600px;
-    height: 400px;
-    background: linear-gradient(135deg, #222 25%, #444 75%);
-    border-radius: 10px;
-    overflow: hidden;
-    user-select: none;
-    box-shadow: 0 0 20px #FFD500 inset;
-  }
-  #pacman {
-    position: absolute;
-    bottom: 10px;
-    transition: left 0.2s ease, width 0.2s ease, height 0.2s ease;
-    user-select: none;
-  }
-  .residue {
-    position: absolute;
-    font-size: 40px;
-    user-select: none;
-    top: 0;
-    pointer-events: none;
-    text-shadow: 0 0 5px black;
-  }
-  #scoreboard {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    margin-top: 15px;
-    flex-wrap: wrap;
-  }
-  .player-score {
-    background: #333;
-    padding: 10px 15px;
-    border-radius: 8px;
-    min-width: 130px;
-  }
-  #info, #timer {
-    margin-top: 15px;
-    font-size: 20px;
-    font-weight: bold;
-    height: 24px;
-  }
-  #choose-color {
-    margin-bottom: 20px;
-  }
-  button.color-btn, button#start-btn, button#next-turn-btn {
-    font-size: 18px;
-    margin: 5px;
-    padding: 10px 15px;
-    border-radius: 8px;
-    border: none;
-    cursor: pointer;
-    color: white;
-    min-width: 150px;
-  }
-  button.color-btn {
-    filter: drop-shadow(0 0 3px black);
-  }
-  button#start-btn {
-    background-color: #0415cf;
-  }
-  button#next-turn-btn {
-    background-color: #007bff;
-    display: none;
-  }
-  
-  
-  
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes" />
+  <title>Reci Go Educativo · Horizontal</title>
+  <style>
+    /* reset / base */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #111;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 16px 12px;
+    }
+
+    /* header */
+    .main-header {
+      background: linear-gradient(90deg, #ff6a00, #ff9e00);
+      padding: 20px 15px;
+      width: 100%;
+      max-width: 1200px;
+      border-radius: 0 0 18px 18px;
+      box-shadow: 0 0 20px #ff7f00, 0 0 50px #ff9e00;
+      text-align: center;
+      color: #fff;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-weight: 700;
+      font-size: clamp(1.8rem, 5vw, 3rem);
+      user-select: none;
+      margin-bottom: 20px;
+    }
+    .main-header p {
+      font-size: clamp(0.9rem, 2.5vw, 1.4rem);
+      font-weight: 500;
+      margin-top: 6px;
+      color: #ffcc80;
+      font-style: italic;
+      letter-spacing: 1px;
+    }
+
+    /* contenedor principal */
+    .app-wrapper {
+      width: 100%;
+      max-width: 1100px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* panel de selección (botones + imágenes horizontales) */
+    #choose-color {
+      background: #1e1e1e;
+      padding: 20px 16px;
+      border-radius: 28px;
+      box-shadow: 0 8px 20px rgba(255, 215, 0, 0.2);
+      width: 100%;
+      margin-bottom: 18px;
+      text-align: center;
+    }
+    #choose-color p {
+      font-size: clamp(0.9rem, 1.8vw, 1.2rem);
+      margin-bottom: 18px;
+      color: #ccc;
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    #choose-color h1 {
+      font-size: clamp(1.4rem, 3vw, 2.2rem);
+      color: #ffcc00;
+      margin: 12px 0 8px;
+    }
+    #choose-color ul {
+      list-style: none;
+      padding: 0;
+      font-size: clamp(0.85rem, 1.6vw, 1.1rem);
+      background: #2a2a2a;
+      border-radius: 30px;
+      padding: 14px 18px;
+      margin: 12px auto 18px;
+      max-width: 700px;
+      line-height: 1.7;
+      text-align: left;
+    }
+    #choose-color ul li {
+      padding: 4px 0;
+      border-bottom: 1px dotted #444;
+    }
+    #choose-color ul li:last-child {
+      border-bottom: none;
+    }
+    #choose-color ul a {
+      color: #ffcc00;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    /* contenedor de botones horizontal (flex wrap) */
+    .color-btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 12px 18px;
+      margin: 16px 0 10px;
+    }
+
+    /* cada item: imagen + botón, ambos en horizontal */
+    .color-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 4px 14px 4px 8px;
+      border-radius: 60px;
+      border: 1px solid #444;
+      transition: 0.2s;
+      flex-wrap: nowrap;
+    }
+    .color-item:hover {
+      border-color: #ffaa33;
+      background: #2a2a2a;
+    }
+    .color-item img {
+      width: 60px;
+      height: auto;
+      display: block;
+      flex-shrink: 0;
+      filter: drop-shadow(0 0 4px rgba(255, 200, 0, 0.3));
+      transition: 0.2s;
+    }
+    /* botón dentro del item */
+    .color-item .color-btn {
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 10px 12px;
+      border: none;
+      border-radius: 40px;
+      color: #fff;
+      cursor: pointer;
+      background: transparent;
+      transition: 0.15s;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+      white-space: nowrap;
+      background: rgba(0,0,0,0.2);
+      backdrop-filter: blur(2px);
+    }
+    .color-item .color-btn:hover {
+      transform: scale(1.04);
+      filter: brightness(1.2);
+    }
+    /* borde de selección (lo ponemos en el item) */
+    .color-item.selected {
+      border: 3px solid white;
+      box-shadow: 0 0 16px #ffcc00;
+      background: #333;
+    }
+
+    /* botón inicio */
+    #start-btn {
+      font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+      padding: 14px 32px;
+      border-radius: 60px;
+      border: none;
+      background: #0415cf;
+      color: white;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 0 16px #0033ff;
+      margin: 12px 0 8px;
+      transition: 0.2s;
+    }
+    #start-btn:disabled {
+      opacity: 0.4;
+      filter: grayscale(0.6);
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+    #start-btn:not(:disabled):hover {
+      transform: scale(1.03);
+      background: #0022cc;
+    }
+
+    /* game container */
+    #game-container {
+      width: 100%;
+      max-width: 700px;
+      aspect-ratio: 16 / 9;
+      background: linear-gradient(135deg, #222 20%, #3a3a3a 80%);
+      border-radius: 24px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 0 30px #ffd50055;
+      margin: 12px auto;
+      display: none;
+    }
+
+    #pacman {
+      position: absolute;
+      bottom: 10px;
+      transition: left 0.15s ease;
+      width: 80px;
+      height: auto;
+      user-select: none;
+      pointer-events: none;
+      z-index: 10;
+      filter: drop-shadow(0 0 10px #ffbb00);
+    }
+
+    .residue {
+      position: absolute;
+      font-size: 40px;
+      user-select: none;
+      pointer-events: none;
+      text-shadow: 0 0 12px black;
+      z-index: 5;
+      transition: top 0.05s linear;
+    }
+
+    /* scoreboard */
+    #scoreboard {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      margin: 12px 0;
+      width: 100%;
+    }
+    .player-score {
+      background: #222;
+      padding: 8px 16px;
+      border-radius: 40px;
+      font-weight: 600;
+      min-width: 110px;
+      border: 2px solid transparent;
+      text-align: center;
+      font-size: clamp(0.7rem, 1.6vw, 1rem);
+    }
+
+    #timer {
+      font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+      font-weight: bold;
+      margin: 6px 0;
+    }
+    #info {
+      font-size: clamp(1rem, 2vw, 1.5rem);
+      min-height: 2.4rem;
+      margin: 6px 0;
+      color: #ffcc80;
+    }
+
+    #next-turn-btn {
+      background: #007bff;
+      color: white;
+      font-size: clamp(1rem, 2vw, 1.4rem);
+      padding: 12px 30px;
+      border: none;
+      border-radius: 60px;
+      font-weight: 700;
+      cursor: pointer;
+      display: none;
+      box-shadow: 0 0 20px #007bff88;
+      transition: 0.2s;
+    }
+    #next-turn-btn:hover {
+      transform: scale(1.04);
+      background: #0066dd;
+    }
+
+    /* footer */
+    .main-footer {
+      font-size: clamp(0.7rem, 1.4vw, 0.95rem);
+      color: #fff8e1;
+      background: linear-gradient(90deg, #111, #222);
+      padding: 20px 16px;
+      margin-top: 30px;
+      width: 100%;
+      max-width: 1200px;
+      text-align: center;
+      border-top: 3px solid #ff6a00;
+      box-shadow: 0 0 20px #ff7f00;
+      border-radius: 18px 18px 0 0;
+      line-height: 1.6;
+    }
+    .main-footer a {
+      color: #00e5ff;
+      text-decoration: underline;
+    }
+
+    /* responsivo: ajuste de imágenes en móvil */
+    @media (max-width: 700px) {
+      .color-item img {
+        width: 48px;
+      }
+      .color-item .color-btn {
+        font-size: 0.7rem;
+        padding: 6px 8px;
+      }
+      .color-item {
+        padding: 2px 10px 2px 4px;
+        gap: 4px;
+      }
+      .residue {
+        font-size: 30px;
+      }
+    }
+    @media (max-width: 480px) {
+      .color-item img {
+        width: 40px;
+      }
+      .color-item .color-btn {
+        font-size: 0.6rem;
+        padding: 4px 6px;
+      }
+      .color-item {
+        padding: 2px 6px 2px 2px;
+      }
+    }
+  </style>
 </head>
 <body>
 
-<h1>RECI GO EDUCATIVO</h1>
+<header class="main-header">
+  ♻️ Reci Go Educativo ♻️
+  <p>¡Aprende, Recicla y Gana en un mundo sostenible!</p>
+</header>
 
-<div id="choose-color">
-  <p>Es un juego interactivo que enseña a clasificar residuos de forma divertida. A través de colores y personajes, los jugadores aprenden sobre el reciclaje y el cuidado del medio ambiente mientras compiten y se divierten. Ideal para niños, escuelas y familias que desean fomentar hábitos ecológicos de forma lúdica.</p>
- <h1>🕹️ ¿Cómo jugar?</h1>
-<ul style="list-style-type: none; padding-left: 0;">
-  <li>Entra a <a href="https://recigoeducativo.netlify.app" target="_blank">recigoeducativo.netlify.app</a></li>
-  <li>Elige el contenedor (color) que te representará</li>
-  <li>Haz clic en <strong>"Iniciar juego"</strong></li>
-  <li>Mueve el contenedor con las flechas ⬅️ ➡️</li>
-  <li>Atrapa solo los residuos de tu color</li>
-  <li>Si aciertas, creces. Si fallas, te encoges</li>
-  <li>Cada 10 puntos subes de nivel. ¡Llega al nivel 12 y gana!</li>
-</ul>
-   
-  <button class="color-btn" style="background:#FFD500;" data-color="yellow">🥤 Amarillo (Plástico)</button>
-  <button class="color-btn" style="background:#007BFF;" data-color="blue">📄 Azul (Papel y Cartón)</button>
-  <button class="color-btn" style="background:#78d408;" data-color="green">🥛 Verde (Vidrio)</button>
-  <button class="color-btn" style="background:#f27f05; color:white;" data-color="orange">🍓 Naranja (Orgánicos)</button>
-  <button class="color-btn" style="background:#f20505; color:white;" data-color="red">⚠️ Rojo (Desechos Peligrosos)</button>
-  <button class="color-btn" style="background:#363636; color:white;" data-color="grey">🧻 Gris (Residuos)</button>
-  <p>
- 
-  <br>
-  <button id="start-btn" disabled>♻️ Iniciar Juego 😎</button>
-    
+<div class="app-wrapper">
+
+  <div id="choose-color">
+    <p>Es un juego interactivo que enseña a clasificar residuos de forma divertida. A través de colores y personajes, los jugadores aprenden sobre el reciclaje y el cuidado del medio ambiente mientras compiten y se divierten. Ideal para niños, escuelas y familias que desean fomentar hábitos ecológicos de forma lúdica.</p>
+    <h1>🕹️ ¿Cómo jugar?</h1>
+    <ul>
+      <li>Entra a <a href="https://recigoeducativo.netlify.app" target="_blank">recigoeducativo.netlify.app</a></li>
+      <li>Elige el contenedor (color) que te representará</li>
+      <li>Haz clic en <strong>"Iniciar juego"</strong></li>
+      <li>Mueve el contenedor con las flechas ⬅️ ➡️</li>
+      <li>Atrapa solo los residuos de tu color</li>
+      <li>Si aciertas, creces. Si fallas, te encoges</li>
+      <li>Cada 10 puntos subes de nivel. ¡Llega al nivel 12 y gana!</li>
+    </ul>
+
+    <!-- Filas de botones con imágenes horizontales -->
+    <div class="color-btn-row" id="colorBtnRow">
+      <!-- cada item se genera con js, pero lo ponemos directamente con estructura -->
+    </div>
+
+    <button id="start-btn" disabled>♻️ Iniciar Juego 😎</button>
+  </div>
+
+  <div id="game-container">
+    <img id="pacman" src="" alt="contenedor" draggable="false" />
+  </div>
+
+  <div id="scoreboard"></div>
+  <div id="timer">Tiempo restante: 60s</div>
+  <div id="info"></div>
+  <button id="next-turn-btn">Siguiente Jugador</button>
+
 </div>
 
+<footer class="main-footer">
+  © 2025 <strong style="color:#ffcc00;">Reci Go Educativo</strong> ♻️ – Juego interactivo de reciclaje creado por <strong>Yobana Orozco Benavides</strong>, pedagoga y artista integral.<br>
+  <em>Este juego se comparte bajo licencia Creative Commons Atribución-NoComercial 4.0 Internacional (CC BY-NC 4.0).</em><br>
+  <span style="color: #ffa726;">Uso libre con fines educativos, prohibido su uso comercial.</span><br>
+  Más información:
+  <a href="https://yobanaorozcoartista.bio.link/" target="_blank" rel="noopener">bio oficial</a>
+</footer>
+
 <script>
-  const images = {
-    yellow: 'https://i.postimg.cc/XY9fnjFV/OIG1-y66-QWWx-Rde-MD85-removebg-preview-1.png',
-    blue: 'https://i.postimg.cc/g0D36gNQ/OIG1-y66-QWWx-Rde-MD85-removebg-preview-2.png',
-    grey: 'https://i.postimg.cc/bJVbmsXR/OIG1-y66-QWWx-Rde-MD85-removebg-preview-3.png',
-    green: 'https://i.postimg.cc/xC8NNnkN/OIG1-y66-QWWx-Rde-MD85-removebg-preview-4.png',
-    red: 'https://i.postimg.cc/rwH0vzQn/OIG1-y66-QWWx-Rde-MD85-removebg-preview-5.png',
-    orange: 'https://i.postimg.cc/wTcnfmTz/OIG1-y66-QWWx-Rde-MD85-removebg-preview-6.png'
-  };
+  (function() {
+    // imágenes para cada color (horizontal: se muestran al lado del botón)
+    const images = {
+      yellow: 'https://i.postimg.cc/XY9fnjFV/OIG1-y66-QWWx-Rde-MD85-removebg-preview-1.png',
+      blue: 'https://i.postimg.cc/g0D36gNQ/OIG1-y66-QWWx-Rde-MD85-removebg-preview-2.png',
+      grey: 'https://i.postimg.cc/bJVbmsXR/OIG1-y66-QWWx-Rde-MD85-removebg-preview-3.png',
+      green: 'https://i.postimg.cc/xC8NNnkN/OIG1-y66-QWWx-Rde-MD85-removebg-preview-4.png',
+      red: 'https://i.postimg.cc/rwH0vzQn/OIG1-y66-QWWx-Rde-MD85-removebg-preview-5.png',
+      orange: 'https://i.postimg.cc/wTcnfmTz/OIG1-y66-QWWx-Rde-MD85-removebg-preview-6.png'
+    };
 
-  // Seleccionamos todos los botones con clase color-btn
-  const buttons = document.querySelectorAll('.color-btn');
+    // colores y etiquetas
+    const colorLabels = {
+      yellow: 'Amarillo (Plástico)',
+      blue: 'Azul (Papel)',
+      green: 'Verde (Vidrio)',
+      orange: 'Naranja (Orgánicos)',
+      red: 'Rojo (Peligrosos)',
+      grey: 'Gris (Residuos)'
+    };
 
-  buttons.forEach(btn => {
-    const color = btn.dataset.color;
-    const imgSrc = images[color];
-    if (imgSrc) {
-      // Crear el elemento imagen
+    const colorBtnRow = document.getElementById('colorBtnRow');
+    const startBtn = document.getElementById('start-btn');
+    let selectedColors = [];
+
+    // construir items horizontales
+    Object.keys(images).forEach(color => {
+      const item = document.createElement('div');
+      item.className = 'color-item';
+      item.dataset.color = color;
+
       const img = document.createElement('img');
-      img.src = imgSrc;
-      img.alt = color + ' icon';
-      img.style.display = 'block';
-      img.style.margin = '0 auto 5px auto'; // centrado y margen abajo
-      img.style.width = '150px'; // tamaño ajustable según lo que necesites
-      img.style.height = 'auto';
+      img.src = images[color];
+      img.alt = color;
+      img.draggable = false;
 
-      // Insertar la imagen antes del botón
-      btn.parentNode.insertBefore(img, btn);
-    }
-  });
-</script>
+      const btn = document.createElement('button');
+      btn.className = 'color-btn';
+      // color de fondo para distinguir (pero con transparencia)
+      btn.style.background = color === 'yellow' ? '#ffd500' :
+                             color === 'blue' ? '#007BFF' :
+                             color === 'green' ? '#78d408' :
+                             color === 'orange' ? '#f27f05' :
+                             color === 'red' ? '#f20505' :
+                             '#363636';
+      btn.style.color = (color === 'yellow' || color === 'blue' || color === 'green') ? '#000' : '#fff';
+      btn.textContent = colorLabels[color] || color;
 
+      item.appendChild(img);
+      item.appendChild(btn);
 
-<div id="game-container" style="display:none;">
-  <img id="pacman" src="" alt="Pacman jugador" draggable="false" />
-</div>
-
-<div id="scoreboard"></div>
-
-<div id="timer">Tiempo restante: 60s</div>
-<div id="info"></div>
-<button id="next-turn-btn">Siguiente Jugador</button>
-
-<script>
-(() => {
-  const gameContainer = document.getElementById('game-container');
-  const pacman = document.getElementById('pacman');
-  const scoreboard = document.getElementById('scoreboard');
-  const timerDisplay = document.getElementById('timer');
-  const infoDisplay = document.getElementById('info');
-  const chooseColorDiv = document.getElementById('choose-color');
-  const startBtn = document.getElementById('start-btn');
-  const nextTurnBtn = document.getElementById('next-turn-btn');
-
-  // URLs de las imágenes de Pacman según color
-  const pacmanImages = {
-    yellow: 'https://i.postimg.cc/XY9fnjFV/OIG1-y66-QWWx-Rde-MD85-removebg-preview-1.png',
-    blue: 'https://i.postimg.cc/g0D36gNQ/OIG1-y66-QWWx-Rde-MD85-removebg-preview-2.png',
-    grey: 'https://i.postimg.cc/bJVbmsXR/OIG1-y66-QWWx-Rde-MD85-removebg-preview-3.png',
-    green: 'https://i.postimg.cc/xC8NNnkN/OIG1-y66-QWWx-Rde-MD85-removebg-preview-4.png',
-    red: 'https://i.postimg.cc/rwH0vzQn/OIG1-y66-QWWx-Rde-MD85-removebg-preview-5.png',
-    orange: 'https://i.postimg.cc/wTcnfmTz/OIG1-y66-QWWx-Rde-MD85-removebg-preview-6.png'
-  };
-
-  // Residuos por tipo: correctos y errados para cada color/jugador
-  const residueTypes = {
-    yellow: { correct: ['🥤','🪥','🍼','🫙','🧴','🍶'], wrong: ['🍇', '💉','📄','🍉','🍎','🍌', '🔋', '🧻','📦'] },
-    blue: { correct: ['📄','📖','📦','📰'], wrong: ['🥤','🍇','🪥','🍉', '🧻', '🔋','🍷','🍌','🫙','🍼','🍎','🍶'] },
-    green: { correct: ['🍾','🍷','🥛'], wrong: ['🍉','📄','🍌','🫙', '💉','🪥','🥤','🍇', '🔋','🍼', '🧻','🍎'] },
-    grey: { correct: ['🍂','🚬','🧻','🦴'], wrong: ['🥤','🫙', '🍎','📄', '🔋','🍼','🪥', '🍉','🍷', '💉','🍶' ,'🍌'] },
-    orange: { correct: ['🍎','🍌','🍇','🍉','🥕'], wrong: ['🥤','🫙', '💉','📄','🍼','🪥', '🧻','🍷', '🔋','🍶'] },
-    red: { correct: ['💉','🧤','☢️','🔋','💊'], wrong: ['🥤','🫙', '🧻', '🍎','📄','🍼', '🍇','🪥', '🍌','🍷','🍶'] }
-  };
-
-  let selectedColors = [];
-  let players = [];
-  let currentPlayerIndex = 0;
-  let residues = [];
-  let pacmanPosX = 260;
-
-  // Tamaño inicial, límites para Pacman
-  const minPacmanSize = 60;
-  const maxPacmanSize = 120;
-
-  let timeLeft = 60;
-  let timerInterval;
-  let gameInterval;
-  let spawnInterval;
-  let moveAllowed = true;
-
-  // Selección de colores para jugadores
-  document.querySelectorAll('.color-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const color = btn.dataset.color;
-      if(selectedColors.includes(color)){
-        selectedColors = selectedColors.filter(c => c !== color);
-        btn.style.border = 'none';
-      } else if(selectedColors.length < 6) { // max 6 jugadores
-        selectedColors.push(color);
-        btn.style.border = '3px solid white';
-      } else {
-        alert('Solo puedes seleccionar hasta 6 jugadores.');
-      }
-      startBtn.disabled = selectedColors.length === 0;
-    });
-  });
-
-  // Configura los jugadores con su color y propiedades iniciales
-  function setupPlayers() {
-    players = selectedColors.map(color => ({
-      color,
-      score: 0,
-      level: 1,
-      pacmanSize: 80,
-      posX: 260 // posición inicial
-    }));
-  }
-
-  // Actualiza la tabla de puntajes, marcando al jugador activo
-  function updateScoreboard() {
-  scoreboard.innerHTML = '';
-  players.forEach((p, i) => {
-    // Verifica si el jugador alcanzó o superó los 10 puntos
-    if (p.score >= 10) {
-      p.level += 1;     // Aumenta el nivel
-      p.score = 0;      // Reinicia el puntaje
-    }
-
-    const div = document.createElement('div');
-    div.className = 'player-score';
-    div.style.border = i === currentPlayerIndex ? '3px solid yellow' : '3px solid transparent';
-    div.style.backgroundColor = p.color === 'grey' ? '#555' : p.color;
-    div.style.color = (p.color === 'orange' || p.color === 'red' || p.color === 'grey') ? 'white' : 'black';
-    div.innerHTML = `<strong>Jugador ${i + 1} (${p.color.toUpperCase()}):</strong><br>
-                     Puntos: ${p.score}<br>
-                     Nivel: ${p.level}`;
-    scoreboard.appendChild(div);
-  });
-}
-
-
-
-  // Cambia imagen y estilo de Pacman según jugador actual
-  function updatePacman() {
-    const player = players[currentPlayerIndex];
-    pacman.src = pacmanImages[player.color];
-    pacman.style.width = player.pacmanSize + 'px';
-    pacman.style.height = player.pacmanSize + 'px';
-    pacman.style.left = player.posX + 'px';
-    pacman.style.bottom = '10px';
-  }
-
-  // Inicia la cuenta regresiva del turno
-  function startTimer() {
-    timeLeft = 60;
-    timerDisplay.textContent = `Tiempo restante: ${timeLeft}s`;
-    timerInterval = setInterval(() => {
-      timeLeft--;
-      timerDisplay.textContent = `Tiempo restante: ${timeLeft}s`;
-      if(timeLeft <= 0) {
-        clearInterval(timerInterval);
-        endTurn();
-      }
-    }, 1000);
-  }
-
-  // Genera residuos aleatorios que caen
-  function spawnResidue() {
-    if(!moveAllowed) return;
-    const player = players[currentPlayerIndex];
-    // 50% chance to spawn correct residue, 50% wrong
-    const correctPool = residueTypes[player.color].correct;
-    const wrongPool = residueTypes[player.color].wrong;
-
-    const isCorrect = Math.random() < 0.5;
-    const emoji = isCorrect
-      ? correctPool[Math.floor(Math.random()*correctPool.length)]
-      : wrongPool[Math.floor(Math.random()*wrongPool.length)];
-
-    const residue = document.createElement('div');
-    residue.className = 'residue';
-    residue.textContent = emoji;
-
-    // Posición horizontal aleatoria dentro del contenedor
-    residue.style.left = Math.floor(Math.random() * (gameContainer.clientWidth - 40)) + 'px';
-    residue.style.top = '0px';
-    gameContainer.appendChild(residue);
-
-    residues.push({element: residue, emoji, correct: isCorrect});
-
-    // Mueve el residuo hacia abajo suavemente
-    let posY = 0;
-    const speed = 2 + player.level; // velocidad aumenta con nivel
-    const fallInterval = setInterval(() => {
-      if(!moveAllowed) {
-        clearInterval(fallInterval);
-        residue.remove();
-        return;
-      }
-      posY += speed;
-      residue.style.top = posY + 'px';
-      // Verifica colisión con Pacman
-      if(checkCollision(residue, pacman)) {
-        // Si es correcto: +1 punto y Pacman crece, si no, -1 punto y Pacman se reduce
-        if(isCorrect) {
-          player.score++;
-          if(player.pacmanSize < maxPacmanSize) {
-            player.pacmanSize += 5;
-          }
-          infoDisplay.textContent = `¡Correcto! +1 punto.`;
+      // evento de selección
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const col = item.dataset.color;
+        if (selectedColors.includes(col)) {
+          selectedColors = selectedColors.filter(c => c !== col);
+          item.classList.remove('selected');
+        } else if (selectedColors.length < 6) {
+          selectedColors.push(col);
+          item.classList.add('selected');
         } else {
-          player.score = Math.max(0, player.score - 1);
-          if(player.pacmanSize > minPacmanSize) {
-            player.pacmanSize -= 5;
-          }
-          infoDisplay.textContent = `¡Incorrecto! -1 punto.`;
+          alert('Solo puedes seleccionar hasta 6 jugadores.');
         }
-        updateScoreboard();
-        updatePacman();
-        clearInterval(fallInterval);
-        residue.remove();
-        residues = residues.filter(r => r.element !== residue);
-      } else if (posY > gameContainer.clientHeight) {
-        // Residuo llegó al fondo sin ser atrapado, se elimina
-        clearInterval(fallInterval);
-        residue.remove();
-        residues = residues.filter(r => r.element !== residue);
-      }
-    }, 30);
-  }
+        startBtn.disabled = selectedColors.length === 0;
+      });
 
-  // Chequea colisión simple entre dos elementos
-  function checkCollision(el1, el2) {
-    const r1 = el1.getBoundingClientRect();
-    const r2 = el2.getBoundingClientRect();
-
-    // Ajustamos para el contenedor, ya que getBoundingClientRect es absoluto en ventana
-    const containerRect = gameContainer.getBoundingClientRect();
-
-    // Calculamos posiciones relativas al contenedor
-    const el1x = r1.left - containerRect.left;
-    const el1y = r1.top - containerRect.top;
-    const el2x = r2.left - containerRect.left;
-    const el2y = r2.top - containerRect.top;
-
-    return !(el1x > el2x + r2.width ||
-             el1x + r1.width < el2x ||
-             el1y > el2y + r2.height ||
-             el1y + r1.height < el2y);
-  }
-
-  // Limpia todos los residuos visibles
-  function clearResidues() {
-    residues.forEach(r => r.element.remove());
-    residues = [];
-  }
-
-  // Finaliza turno y pasa al siguiente jugador
-  function endTurn() {
-    moveAllowed = false;
-    clearInterval(timerInterval);
-    clearResidues();
-    infoDisplay.textContent = `Turno finalizado. Jugador ${currentPlayerIndex + 1}: ${players[currentPlayerIndex].score} puntos.`;
-    nextTurnBtn.style.display = 'inline-block';
-  }
-
-  // Cambia al siguiente jugador
-  function nextPlayer() {
-    nextTurnBtn.style.display = 'none';
-    infoDisplay.textContent = '';
-    currentPlayerIndex++;
-    if(currentPlayerIndex >= players.length) {
-      // Juego terminado, mostrar resultados finales
-      showFinalResults();
-      return;
-    }
-    moveAllowed = true;
-    updateScoreboard();
-    updatePacman();
-    startTimer();
-  }
-
-  // Mostrar resultados finales y ganador
-  function showFinalResults() {
-    gameContainer.style.display = 'none';
-    timerDisplay.textContent = '';
-    infoDisplay.textContent = '🎉 Juego terminado. Resultados finales:';
-    scoreboard.innerHTML = '';
-    players.forEach((p, i) => {
-      const div = document.createElement('div');
-      div.className = 'player-score';
-      div.style.backgroundColor = p.color === 'grey' ? '#555' : p.color;
-      div.style.color = (p.color === 'orange' || p.color === 'red' || p.color === 'grey') ? 'white' : 'black';
-      div.innerHTML = `<strong>Jugador ${i+1} (${p.color.toUpperCase()}):</strong><br>
-                       Puntos: ${p.score}<br>
-                       Nivel: ${p.level}`;
-      scoreboard.appendChild(div);
+      colorBtnRow.appendChild(item);
     });
-    // Encontrar ganador(es)
-    const maxScore = Math.max(...players.map(p => p.score));
-    const winners = players
-      .map((p,i) => ({...p, i}))
-      .filter(p => p.score === maxScore);
-    const winnerText = winners.length === 1 
-      ? `Ganador: Jugador ${winners[0].i+1} (${winners[0].color.toUpperCase()}) con ${maxScore} puntos 🏆`
-      : `Empate entre jugadores: ${winners.map(w => w.i+1).join(', ')} con ${maxScore} puntos 🏆`;
-    infoDisplay.textContent = winnerText;
-    nextTurnBtn.style.display = 'none';
-    startBtn.disabled = false;
-    chooseColorDiv.style.display = 'block';
-  }
 
-  // Mueve Pacman a la izquierda o derecha
-  function movePacman(direction) {
-    if(!moveAllowed) return;
-    const player = players[currentPlayerIndex];
-    const moveAmount = 20;
-    if(direction === 'left') {
-      player.posX = Math.max(0, player.posX - moveAmount);
-    } else if(direction === 'right') {
-      player.posX = Math.min(gameContainer.clientWidth - player.pacmanSize, player.posX + moveAmount);
+    // ========== LÓGICA DEL JUEGO (igual que antes, adaptada) ==========
+    const gameContainer = document.getElementById('game-container');
+    const pacman = document.getElementById('pacman');
+    const scoreboard = document.getElementById('scoreboard');
+    const timerDisplay = document.getElementById('timer');
+    const infoDisplay = document.getElementById('info');
+    const chooseColorDiv = document.getElementById('choose-color');
+    const nextTurnBtn = document.getElementById('next-turn-btn');
+
+    const pacmanImages = images; // reutilizamos
+
+    const residueTypes = {
+      yellow: { correct: ['🥤','🪥','🍼','🫙','🧴','🍶'], wrong: ['🍇', '💉','📄','🍉','🍎','🍌', '🔋', '🧻','📦'] },
+      blue: { correct: ['📄','📖','📦','📰'], wrong: ['🥤','🍇','🪥','🍉', '🧻', '🔋','🍷','🍌','🫙','🍼','🍎','🍶'] },
+      green: { correct: ['🍾','🍷','🥛'], wrong: ['🍉','📄','🍌','🫙', '💉','🪥','🥤','🍇', '🔋','🍼', '🧻','🍎'] },
+      grey: { correct: ['🍂','🚬','🧻','🦴'], wrong: ['🥤','🫙', '🍎','📄', '🔋','🍼','🪥', '🍉','🍷', '💉','🍶' ,'🍌'] },
+      orange: { correct: ['🍎','🍌','🍇','🍉','🥕'], wrong: ['🥤','🫙', '💉','📄','🍼','🪥', '🧻','🍷', '🔋','🍶'] },
+      red: { correct: ['💉','🧤','☢️','🔋','💊'], wrong: ['🥤','🫙', '🧻', '🍎','📄','🍼', '🍇','🪥', '🍌','🍷','🍶'] }
+    };
+
+    let players = [];
+    let currentPlayerIndex = 0;
+    let residues = [];
+    let pacmanPosX = 260;
+
+    const minPacmanSize = 60;
+    const maxPacmanSize = 120;
+
+    let timeLeft = 60;
+    let timerInterval;
+    let spawnInterval;
+    let moveAllowed = true;
+
+    function setupPlayers() {
+      players = selectedColors.map(color => ({
+        color,
+        score: 0,
+        level: 1,
+        pacmanSize: 80,
+        posX: 260
+      }));
     }
-    updatePacman();
-  }
 
-  // Evento teclado para mover Pacman
-  window.addEventListener('keydown', (e) => {
-    if(!moveAllowed) return;
-    if(e.key === 'ArrowLeft' || e.key.toLowerCase() === 'a') {
-      movePacman('left');
-    } else if(e.key === 'ArrowRight' || e.key.toLowerCase() === 'd') {
-      movePacman('right');
+    function updateScoreboard() {
+      scoreboard.innerHTML = '';
+      players.forEach((p, i) => {
+        if (p.score >= 10) {
+          p.level += 1;
+          p.score = 0;
+        }
+        const div = document.createElement('div');
+        div.className = 'player-score';
+        div.style.border = i === currentPlayerIndex ? '3px solid yellow' : '3px solid transparent';
+        div.style.backgroundColor = p.color === 'grey' ? '#555' : p.color;
+        div.style.color = (p.color === 'orange' || p.color === 'red' || p.color === 'grey') ? 'white' : 'black';
+        div.innerHTML = `<strong>Jugador ${i + 1} (${p.color.toUpperCase()}):</strong><br>
+                         Puntos: ${p.score}<br>
+                         Nivel: ${p.level}`;
+        scoreboard.appendChild(div);
+      });
     }
-  });
 
-  // Inicia juego y el turno del primer jugador
-  startBtn.addEventListener('click', () => {
-    if(selectedColors.length === 0) return alert('Selecciona al menos un jugador.');
-    chooseColorDiv.style.display = 'none';
-    gameContainer.style.display = 'block';
-    currentPlayerIndex = 0;
-    setupPlayers();
-    updateScoreboard();
-    updatePacman();
-    moveAllowed = true;
-    startTimer();
+    function updatePacman() {
+      const player = players[currentPlayerIndex];
+      pacman.src = pacmanImages[player.color];
+      pacman.style.width = player.pacmanSize + 'px';
+      pacman.style.height = 'auto';
+      pacman.style.left = player.posX + 'px';
+      pacman.style.bottom = '10px';
+    }
 
-    // Generar residuos constantemente
-    spawnInterval = setInterval(spawnResidue, 1000);
-
-    startBtn.disabled = true;
-  });
-
-  // Siguiente turno
-  nextTurnBtn.addEventListener('click', () => {
-    currentPlayerIndex++;
-    if(currentPlayerIndex >= players.length) {
-      clearInterval(spawnInterval);
-      showFinalResults();
-    } else {
-      moveAllowed = true;
-      clearResidues();
-      updateScoreboard();
-      updatePacman();
+    function startTimer() {
       timeLeft = 60;
       timerDisplay.textContent = `Tiempo restante: ${timeLeft}s`;
-      startTimer();
+      clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        timerDisplay.textContent = `Tiempo restante: ${timeLeft}s`;
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          endTurn();
+        }
+      }, 1000);
+    }
+
+    function spawnResidue() {
+      if (!moveAllowed) return;
+      const player = players[currentPlayerIndex];
+      const correctPool = residueTypes[player.color].correct;
+      const wrongPool = residueTypes[player.color].wrong;
+
+      const isCorrect = Math.random() < 0.5;
+      const emoji = isCorrect
+        ? correctPool[Math.floor(Math.random() * correctPool.length)]
+        : wrongPool[Math.floor(Math.random() * wrongPool.length)];
+
+      const residue = document.createElement('div');
+      residue.className = 'residue';
+      residue.textContent = emoji;
+
+      const containerWidth = gameContainer.clientWidth || 600;
+      residue.style.left = Math.floor(Math.random() * (containerWidth - 40)) + 'px';
+      residue.style.top = '0px';
+      gameContainer.appendChild(residue);
+
+      const resObj = { element: residue, emoji, correct: isCorrect };
+      residues.push(resObj);
+
+      let posY = 0;
+      const speed = 2 + player.level;
+      const fallInterval = setInterval(() => {
+        if (!moveAllowed) {
+          clearInterval(fallInterval);
+          if (residue.parentNode) residue.remove();
+          return;
+        }
+        posY += speed;
+        residue.style.top = posY + 'px';
+
+        if (checkCollision(residue, pacman)) {
+          if (isCorrect) {
+            player.score++;
+            if (player.pacmanSize < maxPacmanSize) player.pacmanSize += 5;
+            infoDisplay.textContent = '¡Correcto! +1 punto.';
+          } else {
+            player.score = Math.max(0, player.score - 1);
+            if (player.pacmanSize > minPacmanSize) player.pacmanSize -= 5;
+            infoDisplay.textContent = '¡Incorrecto! -1 punto.';
+          }
+          updateScoreboard();
+          updatePacman();
+          clearInterval(fallInterval);
+          if (residue.parentNode) residue.remove();
+          residues = residues.filter(r => r.element !== residue);
+        } else if (posY > gameContainer.clientHeight) {
+          clearInterval(fallInterval);
+          if (residue.parentNode) residue.remove();
+          residues = residues.filter(r => r.element !== residue);
+        }
+      }, 30);
+    }
+
+    function checkCollision(el1, el2) {
+      const r1 = el1.getBoundingClientRect();
+      const r2 = el2.getBoundingClientRect();
+      const containerRect = gameContainer.getBoundingClientRect();
+
+      const el1x = r1.left - containerRect.left;
+      const el1y = r1.top - containerRect.top;
+      const el2x = r2.left - containerRect.left;
+      const el2y = r2.top - containerRect.top;
+
+      return !(el1x > el2x + r2.width ||
+               el1x + r1.width < el2x ||
+               el1y > el2y + r2.height ||
+               el1y + r1.height < el2y);
+    }
+
+    function clearResidues() {
+      residues.forEach(r => { if (r.element.parentNode) r.element.remove(); });
+      residues = [];
+    }
+
+    function endTurn() {
+      moveAllowed = false;
+      clearInterval(timerInterval);
+      clearResidues();
+      infoDisplay.textContent = `Turno finalizado. Jugador ${currentPlayerIndex + 1}: ${players[currentPlayerIndex].score} puntos.`;
+      nextTurnBtn.style.display = 'inline-block';
+    }
+
+    function nextPlayer() {
       nextTurnBtn.style.display = 'none';
       infoDisplay.textContent = '';
+      currentPlayerIndex++;
+      if (currentPlayerIndex >= players.length) {
+        showFinalResults();
+        return;
+      }
+      moveAllowed = true;
+      updateScoreboard();
+      updatePacman();
+      startTimer();
     }
-  });
 
-})();
+    function showFinalResults() {
+      gameContainer.style.display = 'none';
+      timerDisplay.textContent = '';
+      infoDisplay.textContent = '🎉 Juego terminado. Resultados finales:';
+      scoreboard.innerHTML = '';
+      players.forEach((p, i) => {
+        const div = document.createElement('div');
+        div.className = 'player-score';
+        div.style.backgroundColor = p.color === 'grey' ? '#555' : p.color;
+        div.style.color = (p.color === 'orange' || p.color === 'red' || p.color === 'grey') ? 'white' : 'black';
+        div.innerHTML = `<strong>Jugador ${i+1} (${p.color.toUpperCase()}):</strong><br>
+                         Puntos: ${p.score}<br>
+                         Nivel: ${p.level}`;
+        scoreboard.appendChild(div);
+      });
+      const maxScore = Math.max(...players.map(p => p.score));
+      const winners = players.map((p, i) => ({ ...p, i })).filter(p => p.score === maxScore);
+      const winnerText = winners.length === 1
+        ? `Ganador: Jugador ${winners[0].i+1} (${winners[0].color.toUpperCase()}) con ${maxScore} puntos 🏆`
+        : `Empate entre jugadores: ${winners.map(w => w.i+1).join(', ')} con ${maxScore} puntos 🏆`;
+      infoDisplay.textContent = winnerText;
+      nextTurnBtn.style.display = 'none';
+      startBtn.disabled = false;
+      chooseColorDiv.style.display = 'block';
+      clearInterval(spawnInterval);
+    }
+
+    function movePacman(direction) {
+      if (!moveAllowed) return;
+      const player = players[currentPlayerIndex];
+      const moveAmount = 20;
+      const containerWidth = gameContainer.clientWidth || 600;
+      if (direction === 'left') {
+        player.posX = Math.max(0, player.posX - moveAmount);
+      } else if (direction === 'right') {
+        player.posX = Math.min(containerWidth - player.pacmanSize, player.posX + moveAmount);
+      }
+      updatePacman();
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if (!moveAllowed) return;
+      if (e.key === 'ArrowLeft' || e.key.toLowerCase() === 'a') {
+        e.preventDefault();
+        movePacman('left');
+      } else if (e.key === 'ArrowRight' || e.key.toLowerCase() === 'd') {
+        e.preventDefault();
+        movePacman('right');
+      }
+    });
+
+    startBtn.addEventListener('click', () => {
+      if (selectedColors.length === 0) return alert('Selecciona al menos un jugador.');
+      chooseColorDiv.style.display = 'none';
+      gameContainer.style.display = 'block';
+      currentPlayerIndex = 0;
+      setupPlayers();
+      updateScoreboard();
+      updatePacman();
+      moveAllowed = true;
+      startTimer();
+      clearInterval(spawnInterval);
+      spawnInterval = setInterval(spawnResidue, 1000);
+      startBtn.disabled = true;
+    });
+
+    nextTurnBtn.addEventListener('click', () => {
+      nextPlayer();
+    });
+
+    // Ajustar pacman al cambiar tamaño de ventana (opcional)
+    window.addEventListener('resize', () => {
+      if (players.length) updatePacman();
+    });
+
+  })();
 </script>
 
 </body>
 </html>
-
-
-
-
-
-<footer style="
-  font-size: 14px;
-  color: #fff8e1;
-  background: linear-gradient(90deg, #111, #222);
-  padding: 20px 15px;
-  margin-top: 40px;
-  text-align: center;
-  border-top: 3px solid #ff6a00;
-  box-shadow: 0 0 10px #ff7f00, 0 0 20px #ff9900;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  border-radius: 15px 15px 0 0;
-">
-  © 2025 <strong style="color:#ffcc00;">Reci Go Educativo</strong> ♻️ – Juego interactivo de reciclaje creado por <strong>Yobana Orozco Benavides</strong>, pedagoga y artista integral.<br>
-  <em>Este juego se comparte bajo licencia Creative Commons Atribución-NoComercial 4.0 Internacional (CC BY-NC 4.0).</em><br>
-  <span style="color: #ffa726;">Uso libre con fines educativos, prohibido su uso comercial.</span><br>
-  Más información: 
-  <a href="https://yobanaorozcoartista.bio.link/" target="_blank" rel="noopener"
-     style="color: #00e5ff; text-decoration: underline;">
-     bio oficial
-  </a>
-</footer>
